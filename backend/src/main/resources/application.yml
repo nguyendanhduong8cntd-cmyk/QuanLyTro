@@ -1,0 +1,68 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  # Nap them application-local.yml (khong commit) neu co - dung de chua mat khau DB tren may ca nhan
+  config:
+    import: optional:file:application-local.yml
+  application:
+    name: quanlytro-backend
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:QuanLyTro}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # 'update' = tu dong dong bo schema voi entity. Doi sang 'validate' khi da on dinh.
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 50MB
+
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+    default-property-inclusion: non_null
+
+# Cau hinh JWT
+app:
+  jwt:
+    # KHUYEN NGHI: dat bien moi truong APP_JWT_SECRET (chuoi base64 it nhat 64 ky tu) khi chay that
+    secret: ${APP_JWT_SECRET:Y2hhbmdlLW1lLXRoaXMtaXMtYS1kZW1vLXNlY3JldC1rZXktZm9yLXF1YW5seXRyby1iYWNrZW5kLTIwMjQ=}
+    access-token-expiration-ms: 86400000        # 24 gio
+    refresh-token-expiration-ms: 604800000      # 7 ngay
+  file:
+    upload-dir: ${APP_UPLOAD_DIR:uploads}
+  ai:
+    # Dat bien moi truong ANTHROPIC_API_KEY de bat tinh nang "Dang tin nhanh bang AI".
+    # De trong -> tinh nang AI tat, cac chuc nang khac van chay binh thuong.
+    anthropic-api-key: ${ANTHROPIC_API_KEY:}
+    model: ${APP_AI_MODEL:claude-opus-4-8}
+    max-tokens: ${APP_AI_MAX_TOKENS:4096}
+  cors:
+    allowed-origins: ${APP_CORS_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:8081}
+
+# Swagger UI: http://localhost:8080/api/swagger-ui.html
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    org.hibernate.SQL: warn
+    com.goldenboat.quanlytro: info

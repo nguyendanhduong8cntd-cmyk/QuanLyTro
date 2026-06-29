@@ -1,0 +1,20 @@
+# ===== Build outputs =====
+backend/target/
+frontend/node_modules/
+frontend/dist/
+
+# ===== Local secrets / config (KHONG commit) =====
+**/application-local.yml
+*.env
+.env
+
+# ===== Uploads (anh nguoi dung tai len) =====
+backend/uploads/
+
+# ===== IDE / OS =====
+.idea/
+.vscode/
+*.iml
+*.iws
+.DS_Store
+*.log

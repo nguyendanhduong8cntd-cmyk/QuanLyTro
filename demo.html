@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TrọTốt — Demo Quản Lý Trọ</title>
+<style>
+  :root{
+    --blue:#2563eb; --blue-600:#2563eb; --blue-700:#1d4ed8; --blue-800:#1e40af;
+    --blue-50:#eff6ff; --blue-100:#dbeafe; --blue-500:#3b82f6;
+    --slate-900:#0f172a; --slate-700:#334155; --slate-600:#475569; --slate-500:#64748b;
+    --slate-400:#94a3b8; --slate-300:#cbd5e1; --slate-200:#e2e8f0; --slate-100:#f1f5f9; --slate-50:#f8fafc;
+    --amber:#f59e0b; --amber-50:#fffbeb; --amber-100:#fef3c7; --amber-700:#b45309;
+    --emerald:#10b981; --emerald-50:#ecfdf5; --emerald-100:#d1fae5; --emerald-700:#047857;
+    --red:#ef4444; --red-50:#fef2f2; --red-100:#fee2e2; --red-600:#dc2626;
+    --violet-50:#f5f3ff; --violet-600:#7c3aed;
+    --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px -1px rgba(0,0,0,.06);
+    --shadow-lg:0 10px 25px -5px rgba(37,99,235,.18),0 8px 10px -6px rgba(37,99,235,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--slate-50);color:var(--slate-700);line-height:1.5}
+  a{text-decoration:none;color:inherit}
+  img{display:block;max-width:100%}
+  .container{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* Demo badge */
+  .demo-badge{position:fixed;bottom:16px;right:16px;z-index:90;background:var(--slate-900);color:#fff;
+    font-size:12px;font-weight:600;padding:8px 14px;border-radius:999px;box-shadow:var(--shadow-lg);opacity:.92}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--slate-200)}
+  .nav{height:62px;display:flex;align-items:center;justify-content:space-between}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;color:var(--slate-900)}
+  .logo .mark{width:36px;height:36px;border-radius:9px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:18px}
+  .logo span{color:var(--blue)}
+  .nav-links{display:flex;align-items:center;gap:6px}
+  .nav-btn{padding:8px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--slate-600);background:none;border:none;cursor:pointer;transition:.15s}
+  .nav-btn:hover{background:var(--slate-100);color:var(--blue)}
+  .nav-btn.active{background:var(--blue);color:#fff}
+  .nav-btn.active:hover{background:var(--blue-700);color:#fff}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:none;cursor:pointer;
+    border-radius:9px;padding:10px 18px;font-size:14px;font-weight:600;transition:.15s}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-primary:hover{background:var(--blue-700)}
+  .btn-outline{background:#fff;color:var(--blue-700);border:1px solid var(--blue-100)}
+  .btn-outline:hover{background:var(--blue-50)}
+  .btn-sm{padding:6px 12px;font-size:13px;border-radius:7px}
+  .btn-ghost{background:none;color:var(--slate-600)}
+  .btn-ghost:hover{background:var(--slate-100)}
+
+  /* Hero */
+  .hero{background:linear-gradient(135deg,var(--blue-600),var(--blue-800));color:#fff;padding:70px 0;text-align:center;position:relative;overflow:hidden}
+  .hero h1{font-size:40px;font-weight:800;line-height:1.15;margin-bottom:14px}
+  .hero p{color:var(--blue-100);font-size:17px;max-width:620px;margin:0 auto}
+  .searchbar{background:#fff;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.18);padding:12px;margin:30px auto 0;max-width:820px;
+    display:flex;gap:10px;flex-wrap:wrap}
+  .searchbar input,.searchbar select{flex:1;min-width:150px;border:none;background:var(--slate-50);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--slate-700);outline:none}
+  .searchbar .btn{flex:0 0 auto}
+
+  /* Sections */
+  .section{padding:46px 0}
+  .section h2{font-size:24px;color:var(--slate-900);margin-bottom:6px}
+  .section .sub{color:var(--slate-500);font-size:14px;margin-bottom:24px}
+  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .cat{background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:22px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:.18s}
+  .cat:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+  .cat .ico{width:54px;height:54px;border-radius:13px;background:var(--blue-50);color:var(--blue);display:grid;place-items:center;font-size:25px;margin:0 auto 12px}
+  .cat b{color:var(--slate-700);font-size:15px}
+
+  /* Listing layout */
+  .listing{display:grid;grid-template-columns:270px 1fr;gap:28px;align-items:start}
+  .filter{background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px;box-shadow:var(--shadow);position:sticky;top:78px}
+  .filter h3{font-size:16px;color:var(--slate-900);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;font-weight:600;color:var(--slate-700);margin-bottom:6px}
+  .field input,.field select{width:100%;border:1px solid var(--slate-300);border-radius:9px;padding:9px 11px;font-size:14px;color:var(--slate-700);outline:none}
+  .field input:focus,.field select:focus{border-color:var(--blue-500);box-shadow:0 0 0 3px var(--blue-100)}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{border:1px solid var(--slate-200);background:#fff;color:var(--slate-600);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;font-weight:500;transition:.15s}
+  .chip:hover{border-color:var(--blue-500);color:var(--blue)}
+  .chip.on{background:var(--blue);border-color:var(--blue);color:#fff}
+
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:#fff;border:1px solid var(--slate-200);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:.18s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+  .thumb{position:relative;aspect-ratio:4/3;background:linear-gradient(135deg,#bfdbfe,#93c5fd)}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .tag{position:absolute;font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px}
+  .tag-vip{left:10px;top:10px;background:var(--amber);color:#3a2c00}
+  .tag-type{right:10px;top:10px;background:rgba(255,255,255,.92);color:var(--slate-700)}
+  .card-body{padding:14px;display:flex;flex-direction:column;gap:7px;flex:1}
+  .card-title{font-weight:700;color:var(--slate-800);font-size:15px;min-height:42px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card-row{display:flex;justify-content:space-between;align-items:center}
+  .price{color:var(--blue);font-weight:800;font-size:17px}
+  .muted{color:var(--slate-500);font-size:13px}
+  .addr{color:var(--slate-500);font-size:13px;display:flex;gap:5px}
+
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px}
+  .b-amber{background:var(--amber-100);color:var(--amber-700)}
+  .b-emerald{background:var(--emerald-100);color:var(--emerald-700)}
+  .b-blue{background:var(--blue-100);color:var(--blue-700)}
+  .b-red{background:var(--red-100);color:var(--red-600)}
+  .b-slate{background:var(--slate-200);color:var(--slate-600)}
+
+  /* Detail */
+  .detail{display:grid;grid-template-columns:1fr 330px;gap:28px;align-items:start}
+  .gallery .main{aspect-ratio:16/10;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#bfdbfe,#93c5fd)}
+  .gallery .main img{width:100%;height:100%;object-fit:cover}
+  .thumbs{display:flex;gap:8px;margin-top:10px}
+  .thumbs div{width:90px;height:64px;border-radius:9px;overflow:hidden;border:2px solid transparent;cursor:pointer}
+  .thumbs div.on{border-color:var(--blue)}
+  .thumbs img{width:100%;height:100%;object-fit:cover}
+  .stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;background:var(--slate-50);border-radius:12px;padding:16px;margin:18px 0}
+  .stats3 .lbl{font-size:12px;color:var(--slate-400)}
+  .stats3 .val{font-weight:700;color:var(--slate-800);margin-top:2px}
+  .contact{background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px;box-shadow:var(--shadow);position:sticky;top:78px}
+
+  /* Dashboard */
+  .dash-wrap{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 62px)}
+  .side{background:#fff;border-right:1px solid var(--slate-200);padding:18px 14px}
+  .side .t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--slate-400);padding:0 10px 10px}
+  .side a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;font-size:14px;font-weight:600;color:var(--slate-600);cursor:pointer}
+  .side a:hover{background:var(--blue-50);color:var(--blue)}
+  .side a.on{background:var(--blue);color:#fff}
+  .dash-main{padding:26px;background:var(--slate-100)}
+  .stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .stat{background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:18px;display:flex;gap:14px;align-items:center;box-shadow:var(--shadow)}
+  .stat .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:0 0 auto}
+  .stat .lbl{font-size:13px;color:var(--slate-500)}
+  .stat .num{font-size:24px;font-weight:800;color:var(--slate-900)}
+  .ic-blue{background:var(--blue-50);color:var(--blue)} .ic-amber{background:var(--amber-50);color:var(--amber)}
+  .ic-emerald{background:var(--emerald-50);color:var(--emerald)} .ic-violet{background:var(--violet-50);color:var(--violet-600)}
+  .ic-slate{background:var(--slate-100);color:var(--slate-600)}
+  .panel{background:#fff;border:1px solid var(--slate-200);border-radius:14px;padding:20px;box-shadow:var(--shadow)}
+  .panel h3{font-size:16px;color:var(--slate-900);margin-bottom:16px}
+  .chart{display:flex;align-items:flex-end;gap:10px;height:230px;padding-top:10px}
+  .bar{flex:1;background:linear-gradient(180deg,var(--blue-500),var(--blue));border-radius:6px 6px 0 0;position:relative;min-height:4px;transition:.2s}
+  .bar:hover{background:var(--blue-700)}
+  .bar span{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:11px;color:var(--slate-400)}
+  .bar b{position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:10px;color:var(--slate-500);opacity:0;transition:.2s}
+  .bar:hover b{opacity:1}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--slate-500);padding:11px 12px;background:var(--slate-50)}
+  td{padding:11px 12px;border-top:1px solid var(--slate-100);color:var(--slate-600)}
+  .gradient-card{background:linear-gradient(135deg,var(--blue-600),var(--blue-700));color:#fff}
+  .gradient-card .num,.gradient-card .lbl{color:#fff}
+  .gradient-card .lbl{opacity:.85}
+
+  footer{background:#fff;border-top:1px solid var(--slate-200);padding:30px 0;text-align:center;color:var(--slate-400);font-size:13px;margin-top:20px}
+  .hidden{display:none!important}
+
+  /* Modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.55);display:grid;place-items:center;z-index:80;padding:20px}
+  .modal{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:24px;box-shadow:var(--shadow-lg)}
+  .modal h3{font-size:18px;color:var(--slate-900);margin-bottom:6px}
+  .modal p{font-size:14px;color:var(--slate-500);margin-bottom:18px}
+
+  @media(max-width:900px){
+    .cats{grid-template-columns:repeat(2,1fr)}
+    .listing{grid-template-columns:1fr}.filter{position:static}
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .detail{grid-template-columns:1fr}.contact{position:static}
+    .dash-wrap{grid-template-columns:1fr}.side{display:flex;overflow-x:auto;gap:6px}.side .t{display:none}
+    .stat-cards{grid-template-columns:repeat(2,1fr)}
+    .hero h1{font-size:30px}
+    .nav-links .hide-sm{display:none}
+  }
+  @media(max-width:560px){.grid{grid-template-columns:1fr}.cats{grid-template-columns:1fr}.stat-cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="demo-badge">● BẢN DEMO — Giao diện mẫu</div>
+
+<header>
+  <div class="container nav">
+    <div class="logo" onclick="go('home')" style="cursor:pointer"><span class="mark">🏠</span>Trọ<span>Tốt</span></div>
+    <div class="nav-links">
+      <button class="nav-btn" data-nav="home" onclick="go('home')">Trang chủ</button>
+      <button class="nav-btn" data-nav="list" onclick="go('list')">Tìm phòng</button>
+      <button class="nav-btn hide-sm" data-nav="admin" onclick="go('admin')">Bảng điều khiển Admin</button>
+      <button class="nav-btn hide-sm" data-nav="staff" onclick="go('staff')">Kênh Nhân viên</button>
+      <button class="btn btn-primary btn-sm" onclick="alert('Demo: chức năng đăng nhập có trong bản chạy thật.')">Đăng nhập</button>
+    </div>
+  </div>
+</header>
+
+<!-- ========== HOME ========== -->
+<main id="screen-home">
+  <section class="hero">
+    <div class="container">
+      <h1>Tìm phòng trọ ưng ý<br>chỉ trong vài phút</h1>
+      <p>Hàng nghìn tin đăng phòng trọ, nhà nguyên căn, chung cư mini trên toàn quốc.</p>
+      <div class="searchbar">
+        <input id="heroKw" placeholder="🔍  Bạn muốn tìm gì?" />
+        <select id="heroProv">
+          <option value="">Toàn quốc</option>
+          <option>Hà Nội</option><option>TP. Hồ Chí Minh</option><option>Đà Nẵng</option>
+        </select>
+        <select id="heroType">
+          <option value="">Mọi loại hình</option>
+          <option value="Phòng trọ">Phòng trọ</option>
+          <option value="Nhà nguyên căn">Nhà nguyên căn</option>
+          <option value="Chung cư mini">Chung cư mini</option>
+          <option value="Ở ghép">Ở ghép</option>
+        </select>
+        <button class="btn btn-primary" onclick="heroSearch()">🔍 Tìm kiếm</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section container">
+    <div class="cats">
+      <div class="cat" onclick="quickType('Phòng trọ')"><div class="ico">🏠</div><b>Phòng trọ</b></div>
+      <div class="cat" onclick="quickType('Nhà nguyên căn')"><div class="ico">🏡</div><b>Nhà nguyên căn</b></div>
+      <div class="cat" onclick="quickType('Chung cư mini')"><div class="ico">🏢</div><b>Chung cư mini</b></div>
+      <div class="cat" onclick="quickType('Ở ghép')"><div class="ico">👥</div><b>Ở ghép</b></div>
+    </div>
+  </section>
+
+  <section class="section container" style="padding-top:0">
+    <h2>Tin đăng nổi bật</h2>
+    <div class="sub">Những phòng trọ mới và được ưu tiên</div>
+    <div class="grid" id="homeGrid"></div>
+  </section>
+
+  <section class="section container" style="padding-top:0">
+    <div class="cats">
+      <div class="cat"><div class="ico">🛡️</div><b>Tin đã kiểm duyệt</b></div>
+      <div class="cat"><div class="ico">✨</div><b>Lọc theo tiện ích</b></div>
+      <div class="cat"><div class="ico">⏰</div><b>Đặt lịch xem nhanh</b></div>
+      <div class="cat"><div class="ico">📊</div><b>Thống kê minh bạch</b></div>
+    </div>
+  </section>
+</main>
+
+<!-- ========== LIST ========== -->
+<main id="screen-list" class="hidden">
+  <div class="container section">
+    <div class="listing">
+      <aside class="filter">
+        <h3>⚙️ Bộ lọc</h3>
+        <div class="field"><label>Từ khóa</label><input id="fKw" placeholder="Tên tin..." oninput="applyFilter()"></div>
+        <div class="field"><label>Loại hình</label>
+          <select id="fType" onchange="applyFilter()">
+            <option value="">Tất cả</option>
+            <option>Phòng trọ</option><option>Nhà nguyên căn</option><option>Chung cư mini</option><option>Ở ghép</option>
+          </select>
+        </div>
+        <div class="field"><label>Khu vực</label>
+          <select id="fProv" onchange="applyFilter()">
+            <option value="">Tất cả</option><option>Hà Nội</option><option>TP. Hồ Chí Minh</option><option>Đà Nẵng</option>
+          </select>
+        </div>
+        <div class="field"><label>Mức giá</label>
+          <select id="fPrice" onchange="applyFilter()">
+            <option value="">Tất cả</option>
+            <option value="0-2000000">Dưới 2 triệu</option>
+            <option value="2000000-4000000">2 - 4 triệu</option>
+            <option value="4000000-99000000">Trên 4 triệu</option>
+          </select>
+        </div>
+        <div class="field"><label>Tiện ích</label><div class="chips" id="fAmen"></div></div>
+        <button class="btn btn-ghost btn-sm" style="width:100%;border:1px solid var(--slate-200)" onclick="resetFilter()">Xóa lọc</button>
+      </aside>
+
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <div><h2 style="font-size:20px">Phòng trọ cho thuê</h2><div class="sub" id="countTxt" style="margin:0"></div></div>
+          <select id="sort" class="field" style="width:auto;margin:0" onchange="applyFilter()">
+            <option value="new">Mới nhất</option>
+            <option value="asc">Giá thấp → cao</option>
+            <option value="desc">Giá cao → thấp</option>
+          </select>
+        </div>
+        <div class="grid" id="listGrid"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ========== DETAIL ========== -->
+<main id="screen-detail" class="hidden">
+  <div class="container section" id="detailBox"></div>
+</main>
+
+<!-- ========== ADMIN ========== -->
+<main id="screen-admin" class="hidden">
+  <div class="dash-wrap">
+    <aside class="side">
+      <div class="t">Quản trị hệ thống</div>
+      <a class="on">📊 Tổng quan</a>
+      <a onclick="alert('Demo: Trang kiểm duyệt tin.')">📄 Kiểm duyệt tin</a>
+      <a onclick="alert('Demo: Quản lý người dùng.')">👥 Người dùng</a>
+      <a onclick="alert('Demo: Quản lý tiện ích.')">✨ Tiện ích</a>
+      <a onclick="alert('Demo: Danh sách giao dịch.')">🧾 Giao dịch</a>
+    </aside>
+    <div class="dash-main">
+      <h2 style="font-size:22px;color:var(--slate-900)">Tổng quan hệ thống</h2>
+      <div class="sub">Thống kê toàn bộ hoạt động của nền tảng</div>
+      <div class="stat-cards" style="margin-bottom:16px">
+        <div class="stat gradient-card"><div class="ic" style="background:rgba(255,255,255,.2)">💰</div><div><div class="lbl">Tổng doanh thu</div><div class="num">8.4 tr</div></div></div>
+        <div class="stat"><div class="ic ic-violet">👑</div><div><div class="lbl">Doanh thu VIP</div><div class="num">3.1 tr</div></div></div>
+        <div class="stat"><div class="ic ic-emerald">👛</div><div><div class="lbl">Tổng nạp ví</div><div class="num">5.3 tr</div></div></div>
+        <div class="stat"><div class="ic ic-blue">👥</div><div><div class="lbl">Người dùng</div><div class="num">128</div></div></div>
+      </div>
+      <div class="stat-cards" style="margin-bottom:20px">
+        <div class="stat"><div class="ic ic-blue">📄</div><div><div class="lbl">Tổng tin đăng</div><div class="num">64</div></div></div>
+        <div class="stat"><div class="ic ic-amber">⏳</div><div><div class="lbl">Chờ duyệt</div><div class="num">7</div></div></div>
+        <div class="stat"><div class="ic ic-emerald">✅</div><div><div class="lbl">Đã duyệt</div><div class="num">49</div></div></div>
+        <div class="stat"><div class="ic ic-slate">🏠</div><div><div class="lbl">Đã cho thuê</div><div class="num">8</div></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px" class="dash-cols">
+        <div class="panel">
+          <h3>Doanh thu theo tháng (2026)</h3>
+          <div class="chart" id="adminChart"></div>
+        </div>
+        <div class="panel">
+          <h3>Tin chờ duyệt gần đây</h3>
+          <div id="adminPending"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ========== STAFF ========== -->
+<main id="screen-staff" class="hidden">
+  <div class="dash-wrap">
+    <aside class="side">
+      <div class="t">Kênh nhân viên</div>
+      <a class="on">📊 Tổng quan</a>
+      <a onclick="alert('Demo: Danh sách tin đăng của tôi.')">📄 Tin đăng của tôi</a>
+      <a onclick="alert('Demo: Form đăng tin mới.')">➕ Đăng tin mới</a>
+      <a onclick="alert('Demo: Lịch hẹn xem phòng.')">📅 Lịch hẹn</a>
+      <a onclick="alert('Demo: Ví tiền & nạp tiền.')">👛 Ví tiền</a>
+    </aside>
+    <div class="dash-main">
+      <h2 style="font-size:22px;color:var(--slate-900)">Xin chào, Nhân Viên Đăng Tin 👋</h2>
+      <div class="sub">Tổng quan hoạt động tin đăng của bạn</div>
+      <div class="stat-cards" style="margin-bottom:16px">
+        <div class="stat"><div class="ic ic-blue">📄</div><div><div class="lbl">Tổng tin đăng</div><div class="num">12</div></div></div>
+        <div class="stat"><div class="ic ic-amber">⏳</div><div><div class="lbl">Chờ duyệt</div><div class="num">2</div></div></div>
+        <div class="stat"><div class="ic ic-emerald">✅</div><div><div class="lbl">Đã duyệt</div><div class="num">9</div></div></div>
+        <div class="stat"><div class="ic ic-slate">🏠</div><div><div class="lbl">Đã cho thuê</div><div class="num">1</div></div></div>
+      </div>
+      <div class="stat-cards" style="margin-bottom:20px">
+        <div class="stat gradient-card"><div class="ic" style="background:rgba(255,255,255,.2)">👛</div><div><div class="lbl">Số dư ví</div><div class="num">420.000đ</div></div></div>
+        <div class="stat"><div class="ic ic-violet">👑</div><div><div class="lbl">Đã chi cho VIP</div><div class="num">280.000đ</div></div></div>
+        <div class="stat"><div class="ic ic-amber">📅</div><div><div class="lbl">Lịch hẹn chờ</div><div class="num">3</div></div></div>
+        <div class="stat"><div class="ic ic-emerald">📅</div><div><div class="lbl">Tổng lịch hẹn</div><div class="num">15</div></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px" class="dash-cols">
+        <div class="panel">
+          <h3>Chi tiêu theo tháng (2026)</h3>
+          <div class="chart" id="staffChart"></div>
+        </div>
+        <div class="panel">
+          <h3>Lịch hẹn sắp tới</h3>
+          <div id="staffAppts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 TrọTốt — Bản demo giao diện hệ thống Quản Lý Trọ. Dữ liệu chỉ mang tính minh họa.</footer>
+
+<script>
+/* ---------- Dữ liệu mẫu ---------- */
+const AMENITIES = ['Wifi','Điều hòa','Máy giặt','Nóng lạnh','Ban công','Khép kín','Chỗ để xe','Tủ lạnh','Giường','Bếp'];
+const ROOMS = [
+  {id:1,title:'Phòng trọ cao cấp full nội thất gần ĐH Bách Khoa',type:'Phòng trọ',price:3200000,area:25,prov:'Hà Nội',addr:'Số 12, ngõ 34 Tạ Quang Bửu, P. Bách Khoa',vip:true,am:['Wifi','Điều hòa','Nóng lạnh','Khép kín','Chỗ để xe'],seed:'room1'},
+  {id:2,title:'Chung cư mini view đẹp, an ninh 24/7',type:'Chung cư mini',price:5500000,area:40,prov:'Hà Nội',addr:'Tòa B, ngõ 8 Dịch Vọng, Cầu Giấy',vip:true,am:['Wifi','Điều hòa','Máy giặt','Ban công','Bếp','Tủ lạnh'],seed:'room2'},
+  {id:3,title:'Nhà nguyên căn 2 tầng cho gia đình thuê',type:'Nhà nguyên căn',price:9000000,area:75,prov:'TP. Hồ Chí Minh',addr:'45 Nguyễn Văn Đậu, P.11, Bình Thạnh',vip:false,am:['Máy giặt','Bếp','Chỗ để xe','Ban công'],seed:'room3'},
+  {id:4,title:'Phòng ở ghép giá rẻ cho sinh viên nữ',type:'Ở ghép',price:1500000,area:20,prov:'TP. Hồ Chí Minh',addr:'78 Bến Nghé, Quận 1',vip:false,am:['Wifi','Điều hòa','Giường'],seed:'room4'},
+  {id:5,title:'Phòng trọ mới xây sạch sẽ, có gác lửng',type:'Phòng trọ',price:2800000,area:22,prov:'Đà Nẵng',addr:'120 Lê Duẩn, Hải Châu',vip:false,am:['Wifi','Nóng lạnh','Khép kín','Chỗ để xe'],seed:'room5'},
+  {id:6,title:'Chung cư mini 1PN đầy đủ tiện nghi trung tâm',type:'Chung cư mini',price:6200000,area:45,prov:'Hà Nội',addr:'Trúc Bạch, Ba Đình',vip:true,am:['Wifi','Điều hòa','Máy giặt','Tủ lạnh','Bếp','Ban công','Nóng lạnh'],seed:'room6'},
+  {id:7,title:'Phòng trọ ban công thoáng, gần chợ',type:'Phòng trọ',price:2400000,area:24,prov:'TP. Hồ Chí Minh',addr:'Phường 12, Bình Thạnh',vip:false,am:['Wifi','Ban công','Chỗ để xe','Giường'],seed:'room7'},
+  {id:8,title:'Nhà nguyên căn mặt tiền kinh doanh',type:'Nhà nguyên căn',price:12000000,area:90,prov:'Đà Nẵng',addr:'200 Nguyễn Văn Linh, Thanh Khê',vip:false,am:['Chỗ để xe','Bếp','Máy giặt'],seed:'room8'},
+  {id:9,title:'Phòng ở ghép nam, gần khu công nghệ',type:'Ở ghép',price:1200000,area:18,prov:'Hà Nội',addr:'Phúc Xá, Ba Đình',vip:false,am:['Wifi','Giường','Nóng lạnh'],seed:'room9'},
+];
+const MONTHS=['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12'];
+const ADMIN_REV=[12,19,8,22,15,28,18,25,30,21,27,35];
+const STAFF_REV=[2,3,1,4,2,5,3,4,6,3,4,7];
+
+/* ---------- Tiện ích ---------- */
+const fmt=n=>n.toLocaleString('vi-VN')+'đ';
+const fmtShort=n=> n>=1e6 ? (n/1e6).toLocaleString('vi-VN',{maximumFractionDigits:1})+' triệu' : Math.round(n/1e3)+' nghìn';
+const img=(seed)=>`https://picsum.photos/seed/${seed}/640/480`;
+
+/* ---------- Render thẻ phòng ---------- */
+function cardHTML(r){
+  return `<div class="card" onclick="openDetail(${r.id})">
+    <div class="thumb">
+      <img src="${img(r.seed)}" alt="" loading="lazy" onerror="this.style.display='none'">
+      ${r.vip?'<span class="tag tag-vip">👑 VIP</span>':''}
+      <span class="tag tag-type">${r.type}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-title">${r.title}</div>
+      <div class="card-row"><span class="price">${fmtShort(r.price)}/tháng</span><span class="muted">📐 ${r.area} m²</span></div>
+      <div class="addr">📍 ${r.prov} · ${r.addr.split(',')[0]}</div>
+    </div>
+  </div>`;
+}
+
+/* ---------- Màn hình ---------- */
+function go(scr){
+  ['home','list','detail','admin','staff'].forEach(s=>document.getElementById('screen-'+s).classList.toggle('hidden',s!==scr));
+  document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('active',b.dataset.nav===scr));
+  window.scrollTo(0,0);
+}
+function heroSearch(){
+  document.getElementById('fKw').value=document.getElementById('heroKw').value;
+  document.getElementById('fProv').value=document.getElementById('heroProv').value;
+  document.getElementById('fType').value=document.getElementById('heroType').value;
+  go('list');applyFilter();
+}
+function quickType(t){document.getElementById('fType').value=t;go('list');applyFilter();}
+
+/* ---------- Bộ lọc ---------- */
+let activeAmen=new Set();
+function renderAmenChips(){
+  document.getElementById('fAmen').innerHTML=AMENITIES.map(a=>
+    `<span class="chip ${activeAmen.has(a)?'on':''}" onclick="toggleAmen('${a}')">${a}</span>`).join('');
+}
+function toggleAmen(a){activeAmen.has(a)?activeAmen.delete(a):activeAmen.add(a);renderAmenChips();applyFilter();}
+function resetFilter(){
+  ['fKw','fType','fProv','fPrice'].forEach(id=>document.getElementById(id).value='');
+  activeAmen.clear();renderAmenChips();applyFilter();
+}
+function applyFilter(){
+  const kw=document.getElementById('fKw').value.toLowerCase().trim();
+  const type=document.getElementById('fType').value;
+  const prov=document.getElementById('fProv').value;
+  const price=document.getElementById('fPrice').value;
+  const sort=document.getElementById('sort').value;
+  let res=ROOMS.filter(r=>{
+    if(kw && !r.title.toLowerCase().includes(kw)) return false;
+    if(type && r.type!==type) return false;
+    if(prov && r.prov!==prov) return false;
+    if(price){const[a,b]=price.split('-').map(Number); if(r.price<a||r.price>b) return false;}
+    for(const a of activeAmen){ if(!r.am.includes(a)) return false; }
+    return true;
+  });
+  if(sort==='asc')res.sort((a,b)=>a.price-b.price);
+  else if(sort==='desc')res.sort((a,b)=>b.price-a.price);
+  else res.sort((a,b)=>(b.vip?1:0)-(a.vip?1:0));
+  document.getElementById('countTxt').textContent=res.length+' kết quả';
+  document.getElementById('listGrid').innerHTML=res.length?res.map(cardHTML).join('')
+    :'<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--slate-400)">Không tìm thấy phòng phù hợp 😕</div>';
+}
+
+/* ---------- Chi tiết ---------- */
+function openDetail(id){
+  const r=ROOMS.find(x=>x.id===id);
+  document.getElementById('detailBox').innerHTML=`
+    <button class="btn btn-ghost btn-sm" onclick="go('list')" style="margin-bottom:14px">← Quay lại</button>
+    <div class="detail">
+      <div>
+        <div class="gallery">
+          <div class="main"><img src="${img(r.seed)}" onerror="this.style.display='none'"></div>
+          <div class="thumbs">
+            <div class="on"><img src="${img(r.seed)}" onerror="this.parentElement.style.background='#bfdbfe'"></div>
+            <div><img src="${img(r.seed+'b')}" onerror="this.parentElement.style.background='#93c5fd'"></div>
+            <div><img src="${img(r.seed+'c')}" onerror="this.parentElement.style.background='#60a5fa'"></div>
+          </div>
+        </div>
+        <div style="margin-top:20px">
+          <span class="badge b-blue">🏷️ ${r.type}</span>
+          <h2 style="font-size:23px;margin:10px 0 6px">${r.title}</h2>
+          <div class="addr" style="font-size:15px">📍 ${r.addr}, ${r.prov}</div>
+          <div class="stats3">
+            <div><div class="lbl">Giá thuê</div><div class="val" style="color:var(--blue)">${fmt(r.price)}/tháng</div></div>
+            <div><div class="lbl">Diện tích</div><div class="val">${r.area} m²</div></div>
+            <div><div class="lbl">Ngày đăng</div><div class="val">28/06/2026</div></div>
+          </div>
+          <h3 style="color:var(--slate-900);margin-bottom:10px">Tiện ích</h3>
+          <div class="chips" style="margin-bottom:20px">${r.am.map(a=>`<span class="chip on" style="cursor:default">${a}</span>`).join('')}</div>
+          <h3 style="color:var(--slate-900);margin-bottom:8px">Mô tả chi tiết</h3>
+          <p style="color:var(--slate-600)">Phòng sạch sẽ, thoáng mát, an ninh đảm bảo, gần trường học, chợ và các tiện ích công cộng. Giờ giấc tự do, có chỗ để xe rộng rãi. Liên hệ ngay để được xem phòng và nhận ưu đãi tháng đầu.</p>
+        </div>
+      </div>
+      <div>
+        <div class="contact">
+          <div class="lbl muted">Giá thuê</div>
+          <div style="font-size:30px;font-weight:800;color:var(--blue)">${fmt(r.price)}</div>
+          <div class="muted">mỗi tháng</div>
+          <div style="border-top:1px solid var(--slate-100);margin:16px 0"></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="width:46px;height:46px;border-radius:50%;background:var(--blue-100);color:var(--blue-700);display:grid;place-items:center;font-weight:700;font-size:18px">N</span>
+            <div><div class="muted" style="font-size:12px">Người đăng tin</div><b style="color:var(--slate-800)">Nhân Viên Đăng Tin</b></div>
+          </div>
+          <button class="btn btn-outline" style="width:100%;margin-top:16px" onclick="alert('Demo: hiển thị số điện thoại 0901234567')">📞 0901 234 567</button>
+          <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="showBooking()">📅 Đặt lịch xem phòng</button>
+        </div>
+      </div>
+    </div>`;
+  go('detail');
+}
+
+function showBooking(){
+  const bg=document.createElement('div');bg.className='modal-bg';
+  bg.innerHTML=`<div class="modal" onclick="event.stopPropagation()">
+    <h3>Đặt lịch xem phòng</h3><p>Chọn thời gian bạn muốn tới xem phòng.</p>
+    <div class="field"><label>Thời gian</label><input type="datetime-local"></div>
+    <div class="field"><label>Ghi chú</label><input placeholder="Lời nhắn cho chủ nhà..."></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">
+      <button class="btn btn-ghost" onclick="this.closest('.modal-bg').remove()">Hủy</button>
+      <button class="btn btn-primary" onclick="this.closest('.modal-bg').remove();setTimeout(()=>alert('✅ Đặt lịch thành công! (demo)'),100)">Xác nhận</button>
+    </div></div>`;
+  bg.onclick=()=>bg.remove();
+  document.body.appendChild(bg);
+}
+
+/* ---------- Biểu đồ ---------- */
+function renderChart(elId,data){
+  const max=Math.max(...data);
+  document.getElementById(elId).innerHTML=data.map((v,i)=>
+    `<div class="bar" style="height:${Math.round(v/max*100)}%"><b>${v} tr</b><span>${MONTHS[i]}</span></div>`).join('');
+}
+function renderAdminPending(){
+  const rows=ROOMS.slice(0,4).map(r=>`<tr><td><b style="color:var(--slate-700)">${r.title.slice(0,26)}…</b><br><span class="muted">${r.prov}</span></td><td><span class="badge b-amber">Chờ duyệt</span></td></tr>`).join('');
+  document.getElementById('adminPending').innerHTML=`<table><tbody>${rows}</tbody></table>`;
+}
+function renderStaffAppts(){
+  const a=[['Nguyễn Văn A','28/06 14:00','b-blue','Đã xác nhận'],['Trần Thị B','29/06 09:30','b-amber','Chờ xác nhận'],['Lê Văn C','30/06 16:00','b-amber','Chờ xác nhận']];
+  document.getElementById('staffAppts').innerHTML=`<table><tbody>${a.map(x=>`<tr><td><b style="color:var(--slate-700)">${x[0]}</b><br><span class="muted">📅 ${x[1]}</span></td><td><span class="badge ${x[2]}">${x[3]}</span></td></tr>`).join('')}</tbody></table>`;
+}
+
+/* ---------- Khởi tạo ---------- */
+document.getElementById('homeGrid').innerHTML=ROOMS.slice(0,6).map(cardHTML).join('');
+renderAmenChips();applyFilter();
+renderChart('adminChart',ADMIN_REV);renderChart('staffChart',STAFF_REV);
+renderAdminPending();renderStaffAppts();
+go('home');
+</script>
+</body>
+</html>
